@@ -11,6 +11,7 @@ from loginform import LoginForm
 from re_form import RegisterForm
 from moveform import MoveForm
 
+import os
 from random import randrange
 from datetime import datetime, timedelta
 
