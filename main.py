@@ -236,7 +236,8 @@ def remove_records():
 
 # удаление учетных записей игроков, зарегистрировавшихся ранее чем OLD_USER дней назад и
 # не имеющих ни одной записанной игры (или не играл, или удалены за давность).
-# Доступно только пользователям со статусом admin
+# Доступно только пользователям со статусом admin.
+# Пользователи со статусом admin удалению не подлежат.
 @app.route('/remove_old_users')
 @login_required
 def remove_old_users():
@@ -245,6 +246,7 @@ def remove_old_users():
     db_sess = db_session.create_session()
     users = db_sess.query(User).join(Record, Record.user_id == User.id,
                                      isouter=True).filter(User.reg_date < date_OLD_USER_days_ago,
+                                                          User.status != 'admin',
                                                           Record.id.is_(None)).distinct(User.email)
     return render_template("remove.html", parent_template="users.html",
                            users=users, header="Эти учетные записи будут удалены",
@@ -261,6 +263,7 @@ def remove_users():
     records = db_sess.query(Record).distinct(Record.user_id)    
     users = db_sess.query(User).join(Record, Record.user_id == User.id,
                                      isouter=True).filter(User.reg_date < date_OLD_USER_days_ago,
+                                                          User.status != 'admin',
                                                           Record.id.is_(None)).distinct(User.email)
     removed_id = [user.id for user in users]
     print(removed_id)
